@@ -452,6 +452,12 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     #else
         m_pGLcontext = m_glcc->GetContext();
     #endif
+
+    #ifdef __APPLE__
+        m_retinaHelper = new RetinaHelper(m_glcc);
+        m_retinaHelper->setViewWantsBestResolutionOpenGLSurface(true);
+    #endif
+
     }
 #endif
 
@@ -858,6 +864,31 @@ bool ChartCanvas::IsTempMenuBarEnabled()
 #else
     return true;
 #endif
+}
+
+void ChartCanvas::GetSize(int *w, int *h)
+{
+  int wb, wh;
+  wxWindow::GetSize(&wb, &wh);
+
+#ifdef __APPLE__
+  float newx = wb * m_retinaHelper->getBackingScaleFactor();
+  float newy = wh * m_retinaHelper->getBackingScaleFactor();
+  wb = newx;
+  wh = newy;
+#endif
+
+  *w = wb;
+  *h = wh;
+}
+
+wxSize ChartCanvas::GetSize()
+{
+  wxSize s;
+
+  GetSize(&s.x, &s.y);
+
+  return s;
 }
 
 double ChartCanvas::GetCanvasRangeMeters()
@@ -4544,6 +4575,13 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
 {
 
     GetClientSize( &m_canvas_width, &m_canvas_height );
+
+#ifdef __APPLE__
+  float newx = m_canvas_width * m_retinaHelper->getBackingScaleFactor();
+  float newy = m_canvas_height * m_retinaHelper->getBackingScaleFactor();
+  m_canvas_width = newx;
+  m_canvas_height = newy;
+#endif
 
 //    Get some canvas metrics
 

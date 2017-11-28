@@ -48,6 +48,10 @@
 #include "emboss_data.h"
 #include "S57Sector.h"
 
+#ifdef __APPLE__
+#include "macos/RetinaHelper.h"
+#endif
+
 class wxGLContext;
 class GSHHSChart;
 class IDX_entry;
@@ -139,6 +143,9 @@ public:
       void OnPaint(wxPaintEvent& event);
       void PaintCleanup();
       void Scroll(int dx, int dy);
+
+      void GetSize(int *w, int *h);
+      wxSize GetSize();
 
       bool MouseEventOverlayWindows( wxMouseEvent& event );
       bool MouseEventChartBar( wxMouseEvent& event );
@@ -626,6 +633,9 @@ private:
       glChartCanvas *m_glcc;
       wxGLContext   *m_pGLcontext;
 //#endif
+#ifdef __APPLE__
+      RetinaHelper  *m_retinaHelper;
+#endif
 
       //Smooth movement member variables
       wxPoint     m_pan_drag;

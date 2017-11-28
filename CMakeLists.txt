@@ -1643,6 +1643,15 @@ ENDIF(WIN32)
 
 IF(APPLE)
 
+# RetinaHelper is Objective-C, so it adds an ObjectiveC runtime which tries
+# to include an optional object that is not present on 10.7, but since it is
+# not used by our code this doesn't matter.
+SET(EXTRA_LIBS ${EXTRA_LIBS} "-Xlinker -U -Xlinker _objc_readClassPair" )
+SET(HDRS ${HDRS} include/macos/RetinaHelperImpl.h
+                 include/macos/RetinaHelper.h
+)
+SET(SRCS ${SRCS} src/macos/RetinaHelperImpl.mm)
+
 IF(NOT BUNDLE_GSHHS MATCHES "NONE")
   SET_SOURCE_FILES_PROPERTIES(
            ${gshhs} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/gshhs  )
